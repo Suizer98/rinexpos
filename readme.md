@@ -11,6 +11,7 @@ Tech stacks:
 In the project directory, run:
 
 ```
+conda activate rinex
 python3 readnav.py
 ```
 
