@@ -4,9 +4,9 @@ A simple project to get time series satellite position from RINEX navigation and
 
 Tech stacks:
 
-![Tech stacks](https://skillicons.dev/icons?i=python,anaconda)
+![Tech stacks](https://skillicons.dev/icons?i=python,anaconda,matlab,octave)
 
-## Features
+## Python
 
 In the project directory, run:
 
@@ -15,10 +15,30 @@ conda activate rinex
 python3 readnav.py
 ```
 
-## Installation
+### Installation
 
 Install Anaconda on your pc, then in the project directory, run:
 
 ```
 conda env create -f environment.yml
+```
+
+## Matlab
+
+In the project directory, run:
+
+```
+octave --eval "rinexnav"
+```
+
+### Installation
+
+Install octave on your linux environment:
+
+```
+    apt-get update -y --no-install-recommends \
+    apt-get install -y --no-install-recommends \
+        octave \
+        octave-netcdf \
+        libnetcdf-dev \
 ```
