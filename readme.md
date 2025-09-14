@@ -1,8 +1,12 @@
-# Rinex Pos
+# RINEX Position Processing
 
-A simple project to get time series satellite position from RINEX navigation and observation file
+A comprehensive toolkit for processing RINEX (Receiver Independent Exchange Format) GPS navigation and observation files to extract satellite positions and generate 3D orbital visualizations.
 
-Tech stacks:
+## What it does
+
+This project reads RINEX navigation files (`.n` files) containing GPS satellite ephemeris data and calculates satellite positions over time. It then visualizes the complex 3D orbital trajectories of all visible satellites, showing their movement patterns and orbital characteristics.
+
+**Tech stacks:**
 
 ![Tech stacks](https://skillicons.dev/icons?i=python,anaconda,matlab,octave,docker)
 
@@ -66,3 +70,9 @@ Execute Octave/MATLAB code:
 ```bash
 docker-compose exec rinexpos bash -c "cd matlab && octave rinexnav.m"
 ```
+
+## Sample Results
+
+![Sample Satellite Orbits](results/chur1610.png)
+
+*3D visualization of GPS satellite orbits showing the complex trajectories of 29 satellites over time, with each satellite represented by a unique colored line.*
