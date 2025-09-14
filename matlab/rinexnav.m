@@ -5,7 +5,7 @@
 clear;clc;
 
 %Input navigation file
-inputnav = 'chur1610.19n';
+inputnav = '../data/chur1610.19n';
 
 %Form and read NAV file for easier access
 rinexe (inputnav,'Rinexnav.nav');
@@ -22,19 +22,31 @@ starttime = mytime(1,2);  %can be deleted
 endtime = mytime(rwt,2);
 
 %Compute satellite coordinate for all epoch, calculate 1 by 1
+svposh = zeros(32, 5); % Initialize svposh matrix
+svposc = cell(rwt, 1); % Initialize cell array
 for i = 1:rwt    
     timesat = mytime(i,2);  %define time
     for j = 1:32  %we got 32 satellites
         sv = j; %define no of run, finish epoch then continue to next satellites
         col_Eph = find_eph(Eph,sv,timesat);
         k = col_Eph;
-        satposition = satpos(timesat,Eph(:,k)); %input=time,eph eg:satillte 10=column 10
-        X = satposition(1);
-        Y = satposition(2);
-        Z = satposition(3);
-        svposh(j,:) = [timesat sv X Y Z]; %compute 32 data
+        if k > 0  % Only process if ephemeris data is available
+            try
+                satposition = satpos(timesat,Eph(:,k)); %input=time,eph eg:satillte 10=column 10
+                X = satposition(1);
+                Y = satposition(2);
+                Z = satposition(3);
+                svposh(j,:) = [timesat sv X Y Z]; %compute 32 data
+            catch
+                % Error in satpos calculation
+                svposh(j,:) = [timesat sv NaN NaN NaN]; %compute 32 data
+            end
+        else
+            % No ephemeris data available for this satellite at this time
+            svposh(j,:) = [timesat sv NaN NaN NaN]; %compute 32 data
+        end
     end
-    svposc{i,:}=svposh; %combine epoch files, c is in cell format
+    svposc{i,1}=svposh; %combine epoch files, c is in cell format
 end
 svpos = cell2mat(svposc);%Satellite coordinate for all epoch, transform cell to matrix form
 
@@ -135,7 +147,10 @@ svpos31(svpos31(:,2) ~= 31,:) = [];
 svpos32 = svpos;
 svpos32(svpos32(:,2) ~= 32,:) = [];
 
-figure
+% Set graphics toolkit to gnuplot for headless mode
+graphics_toolkit('gnuplot');
+figure('visible', 'off')
+
 %Plot all satellite
 %For individual satellite plotting please see below
 %to specify epoch use command below
@@ -163,6 +178,22 @@ legend({'svpos01','svpos02','svpos03','svpos04','svpos05','svpos06','svpos07','s
     'svpos30','svpos31','svpos32'});
 xlabel('X (m)');ylabel('Y (m)');zlabel('Z (m)'); %ecef wgs84 ellipsoid model
 
+% Get input filename without extension
+[~, name, ~] = fileparts(inputnav);
+
+% Save the plot
+png_filename = fullfile('../results', [name '.png']);
+print(png_filename, '-dpng', '-r300');
+fprintf('✓ Saved: %s\n', png_filename);
+
+% Save CSV data
+csv_filename = fullfile('../results', [name '.csv']);
+csvwrite(csv_filename, svpos);
+fprintf('RINEX Processing Complete!\n');
+fprintf('Data saved to: %s\n', csv_filename);
+fprintf('Total epochs processed: %d\n', rwt);
+fprintf('Total satellite positions calculated: %d\n', size(svpos, 1));
+
 %Sample for plotting individual satellite
 %Remove % and change the XX to respective satellite number
 %Remember to add % for the above plot
@@ -171,10 +202,11 @@ xlabel('X (m)');ylabel('Y (m)');zlabel('Z (m)'); %ecef wgs84 ellipsoid model
 % legend('svposXX');
 % xlabel('X');ylabel('Y');zlabel('Z');
 
-XX = 1;
-figure
-plot3(eval(sprintf('svpos%02d(1:rwt, 3)', XX)), eval(sprintf('svpos%02d(1:rwt, 4)', XX)), eval(sprintf('svpos%02d(1:rwt, 5)', XX)));
-legend(sprintf('svpos%02d', XX));
-xlabel('X (m)');
-ylabel('Y (m)');
-zlabel('Z (m)');
+% Individual satellite plotting also disabled for Docker
+% XX = 1;
+% figure
+% plot3(eval(sprintf('svpos%02d(1:rwt, 3)', XX)), eval(sprintf('svpos%02d(1:rwt, 4)', XX)), eval(sprintf('svpos%02d(1:rwt, 5)', XX)));
+% legend(sprintf('svpos%02d', XX));
+% xlabel('X (m)');
+% ylabel('Y (m)');
+% zlabel('Z (m)');

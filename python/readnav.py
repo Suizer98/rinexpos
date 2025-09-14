@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Load the navigation data
-nav_file = "chur1610.19n"
+nav_file = "data/chur1610.19n"
 nav_data = gr.load(nav_file)
 print(nav_data)
 
