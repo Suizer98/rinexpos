@@ -15,6 +15,7 @@ from find_eph import find_eph
 from satpos import satpos
 from ecef_to_lla import ecef_to_lla
 from plot_satellites import plot_satellites
+from gps_time import gps_time_to_datetime_iso
 
 
 def extract_date_from_rinex(file_path):
@@ -196,25 +197,27 @@ def main():
     np.savetxt(csv_filename, svpos, delimiter=",", fmt="%.10f")
     print(f"✓ Saved: {csv_filename}")
 
-    # Also save with lat/lon/alt format
+    # Also save with lat/lon/alt format with readable dates
     lla_filename = f"results/{name}_latlonalt.csv"
     lla_data = []
     for row in svpos:
         if not np.isnan(row[2]):  # If X coordinate is not NaN
             lat, lon, alt = ecef_to_lla(row[2], row[3], row[4])
-            lla_data.append([row[0], row[1], lat, lon, alt])
+            # Convert GPS time to readable datetime
+            readable_time = gps_time_to_datetime_iso(row[0], year, month, day)
+            lla_data.append([readable_time, int(row[1]), lat, lon, alt])
         else:
-            lla_data.append([row[0], row[1], np.nan, np.nan, np.nan])
+            readable_time = gps_time_to_datetime_iso(row[0], year, month, day)
+            lla_data.append([readable_time, int(row[1]), np.nan, np.nan, np.nan])
 
-    lla_array = np.array(lla_data)
-    np.savetxt(
-        lla_filename,
-        lla_array,
-        delimiter=",",
-        header="Time,Sat,Lat,Lon,Alt",
-        comments="",
-        fmt="%.10f",
-    )
+    # Save as CSV with proper formatting
+    with open(lla_filename, 'w') as f:
+        f.write("DateTime,Sat,Lat,Lon,Alt\n")
+        for row in lla_data:
+            if np.isnan(row[2]):  # If lat is NaN
+                f.write(f"{row[0]},{row[1]},,,\n")
+            else:
+                f.write(f"{row[0]},{row[1]},{row[2]:.10f},{row[3]:.10f},{row[4]:.10f}\n")
     print(f"✓ Saved: {lla_filename}")
 
     print("\nRINEX Processing Complete!")
