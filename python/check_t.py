@@ -13,12 +13,12 @@ def check_t(t):
     """
     Repairs over- and underflow of GPS time
     Based on MATLAB check_t.m
-    
+
     Parameters:
     -----------
     t : float or array
         GPS time in seconds
-        
+
     Returns:
     --------
     tt : float or array

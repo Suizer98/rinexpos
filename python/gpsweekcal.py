@@ -15,14 +15,14 @@ def gpsweekcal(date, interval):
     """
     Calculate GPS week and generate time for 24 hours
     Based on MATLAB gpsweekcal.m
-    
+
     Parameters:
     -----------
     date : list
         [year, month, day] in format [YY, MM, DD]
     interval : int
         Time interval in seconds
-        
+
     Returns:
     --------
     my_time : numpy.ndarray

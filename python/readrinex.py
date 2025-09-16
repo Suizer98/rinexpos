@@ -14,12 +14,12 @@ def readrinex(file):
     """
     Read RINEX navigation file using georinex
     Based on MATLAB rinexe.m and get_eph.m
-    
+
     Parameters:
     -----------
     file : str
         Path to RINEX navigation file
-        
+
     Returns:
     --------
     nav_data : xarray.Dataset
@@ -37,14 +37,14 @@ def get_eph(nav_data, sv=None):
     """
     Extract ephemeris data for specific satellite
     Based on MATLAB get_eph.m
-    
+
     Parameters:
     -----------
     nav_data : xarray.Dataset
         Navigation data from georinex
     sv : str, optional
         Satellite ID (e.g., 'G01'). If None, returns all satellites
-        
+
     Returns:
     --------
     eph : xarray.Dataset

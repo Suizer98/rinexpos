@@ -18,24 +18,24 @@ def satpos(t, eph):
     """
     Calculate X,Y,Z coordinates at time t for given ephemeris
     Based on MATLAB satpos.m
-    
+
     Parameters:
     -----------
     t : float
         GPS time in seconds
     eph : dict or array
         Ephemeris data containing satellite parameters
-        
+
     Returns:
     --------
     satp : numpy.ndarray
         [X, Y, Z] coordinates in meters
     """
     # Extract ephemeris parameters
-    if hasattr(eph, 'data_vars'):
+    if hasattr(eph, "data_vars"):
         # Handle georinex xarray format
         svprn = 0  # Not used in calculation
-        
+
         def safe_get(var_name, default=0):
             if var_name in eph:
                 val = eph[var_name].values
@@ -44,7 +44,7 @@ def satpos(t, eph):
                 else:  # Array
                     return val[0]
             return default
-        
+
         af2 = safe_get("SVclockDriftRate")
         M0 = safe_get("M0")
         roota = safe_get("sqrtA")  # sqrtA is already the square root of semi-major axis
@@ -70,7 +70,9 @@ def satpos(t, eph):
         svprn = eph.get("SVclockBias", 0)
         af2 = eph.get("SVclockDriftRate", 0)
         M0 = eph.get("M0", 0)
-        roota = eph.get("sqrtA", 0)  # sqrtA is already the square root of semi-major axis
+        roota = eph.get(
+            "sqrtA", 0
+        )  # sqrtA is already the square root of semi-major axis
         deltan = eph.get("DeltaN", 0)
         ecc = eph.get("Eccentricity", 0)
         omega = eph.get("omega", 0)
@@ -111,41 +113,41 @@ def satpos(t, eph):
         af0 = eph[18]
         af1 = eph[19]
         toc = eph[20]
-    
+
     # Procedure for coordinate calculation (Keplerian elements)
     A = roota * roota  # Semi-major axis (roota is sqrt(A))
     tk = check_t(t - toe)
     n0 = np.sqrt(GM / A**3)
     n = n0 + deltan
     M = M0 + n * tk
-    M = np.mod(M + 2*np.pi, 2*np.pi)
-    
+    M = np.mod(M + 2 * np.pi, 2 * np.pi)
+
     # Solve Kepler's equation
     E = M
     for i in range(10):
         E_old = E
         E = M + ecc * np.sin(E)
-        dE = np.mod(E - E_old, 2*np.pi)
+        dE = np.mod(E - E_old, 2 * np.pi)
         if abs(dE) < 1e-12:
             break
-    
-    E = np.mod(E + 2*np.pi, 2*np.pi)
+
+    E = np.mod(E + 2 * np.pi, 2 * np.pi)
     v = np.arctan2(np.sqrt(1 - ecc**2) * np.sin(E), np.cos(E) - ecc)
     phi = v + omega
-    phi = np.mod(phi, 2*np.pi)
-    
-    u = phi + cuc * np.cos(2*phi) + cus * np.sin(2*phi)
-    r = A * (1 - ecc * np.cos(E)) + crc * np.cos(2*phi) + crs * np.sin(2*phi)
-    i = i0 + idot * tk + cic * np.cos(2*phi) + cis * np.sin(2*phi)
+    phi = np.mod(phi, 2 * np.pi)
+
+    u = phi + cuc * np.cos(2 * phi) + cus * np.sin(2 * phi)
+    r = A * (1 - ecc * np.cos(E)) + crc * np.cos(2 * phi) + crs * np.sin(2 * phi)
+    i = i0 + idot * tk + cic * np.cos(2 * phi) + cis * np.sin(2 * phi)
     Omega = Omega0 + (Omegadot - omegae_dot) * tk - omegae_dot * toe
-    Omega = np.mod(Omega + 2*np.pi, 2*np.pi)
-    
+    Omega = np.mod(Omega + 2 * np.pi, 2 * np.pi)
+
     x1 = np.cos(u) * r
     y1 = np.sin(u) * r
-    
+
     satp = np.zeros(3)
     satp[0] = x1 * np.cos(Omega) - y1 * np.cos(i) * np.sin(Omega)
     satp[1] = x1 * np.sin(Omega) + y1 * np.cos(i) * np.cos(Omega)
     satp[2] = y1 * np.sin(i)
-    
+
     return satp

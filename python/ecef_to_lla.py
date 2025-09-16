@@ -12,12 +12,12 @@ import numpy as np
 def ecef_to_lla(x, y, z):
     """
     Convert ECEF coordinates to Latitude, Longitude, Altitude
-    
+
     Parameters:
     -----------
     x, y, z : float or array
         ECEF coordinates in meters
-        
+
     Returns:
     --------
     lat, lon, alt : float or array
@@ -36,9 +36,7 @@ def ecef_to_lla(x, y, z):
     th = np.arctan2(a * z, b * p)
 
     lon = np.arctan2(y, x)
-    lat = np.arctan2(
-        (z + ep**2 * b * np.sin(th) ** 3), (p - esq * a * np.cos(th) ** 3)
-    )
+    lat = np.arctan2((z + ep**2 * b * np.sin(th) ** 3), (p - esq * a * np.cos(th) ** 3))
     N = a / np.sqrt(1 - esq * np.sin(lat) ** 2)
     alt = p / np.cos(lat) - N
 

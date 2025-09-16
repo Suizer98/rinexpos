@@ -24,3 +24,4 @@ pyunpack==0.3
 six==1.16.0
 tzdata==2024.1
 xarray==2024.5.0
+black
