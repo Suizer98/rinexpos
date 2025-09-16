@@ -211,13 +211,15 @@ def main():
             lla_data.append([readable_time, int(row[1]), np.nan, np.nan, np.nan])
 
     # Save as CSV with proper formatting
-    with open(lla_filename, 'w') as f:
-        f.write("DateTime,Sat,Lat,Lon,Alt\n")
+    with open(lla_filename, "w") as f:
+        f.write("Sat,Lat,Lon,Alt,Date\n")
         for row in lla_data:
             if np.isnan(row[2]):  # If lat is NaN
-                f.write(f"{row[0]},{row[1]},,,\n")
+                f.write(f"{row[1]},,,,{row[0]}\n")
             else:
-                f.write(f"{row[0]},{row[1]},{row[2]:.10f},{row[3]:.10f},{row[4]:.10f}\n")
+                f.write(
+                    f"{row[1]},{row[2]:.10f},{row[3]:.10f},{row[4]:.10f},{row[0]}\n"
+                )
     print(f"✓ Saved: {lla_filename}")
 
     print("\nRINEX Processing Complete!")

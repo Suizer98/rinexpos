@@ -50,7 +50,7 @@ def gps_time(julday):
 def gps_time_to_datetime_iso(gps_seconds, year, month, day):
     """
     Convert GPS seconds of week to ISO format datetime
-    
+
     Parameters:
     -----------
     gps_seconds : float
@@ -59,7 +59,7 @@ def gps_time_to_datetime_iso(gps_seconds, year, month, day):
         Year
     month : int
         Day
-        
+
     Returns:
     --------
     datetime_str : str
@@ -67,16 +67,16 @@ def gps_time_to_datetime_iso(gps_seconds, year, month, day):
     """
     # GPS epoch: January 6, 1980 00:00:00 UTC
     gps_epoch = datetime(1980, 1, 6)
-    
+
     # Calculate the number of weeks since GPS epoch
     current_date = datetime(year, month, day)
     days_since_epoch = (current_date - gps_epoch).days
     weeks_since_epoch = days_since_epoch // 7
-    
+
     # Calculate total seconds since GPS epoch
     total_seconds = weeks_since_epoch * 7 * 24 * 3600 + gps_seconds
-    
+
     # Convert to datetime
     gps_datetime = gps_epoch + timedelta(seconds=total_seconds)
-    
+
     return gps_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
