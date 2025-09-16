@@ -55,11 +55,17 @@ docker-compose exec rinexpos bash -c "cd matlab && octave rinexnav_enhanced.m"
 
 Execute Python code:
 ```bash
-docker-compose exec rinexpos python3 python/readnav.py
+docker-compose exec rinexpos python3 python/rinexnav.py --file=data/brdc0680.20n --date=19,6,10 --interval=15 --plot
 ```
 
 ## Sample Results
 
-![Sample Satellite Orbits](results/chur1610.png)
+*3D visualization of GPS satellite orbits showing the complex trajectories of satellites over time, with each satellite represented by a unique colored line.*
 
-*3D visualization of GPS satellite orbits showing the complex trajectories of 29 satellites over time, with each satellite represented by a unique colored line.*
+### MATLAB
+
+![MATLAB](results/chur1610_matlab.png)
+
+### Python
+
+![Python](results/chur1610_python.png)
