@@ -35,7 +35,7 @@ This project reads RINEX navigation files (`.n` files) containing GPS satellite 
    ```
 2. Run the script:
    ```bash
-   octave --eval "rinexnav"
+   octave --eval "rinexnav_enhanced"
    ```
 
 ## Docker Setup

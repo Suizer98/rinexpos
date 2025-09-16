@@ -8,4 +8,4 @@ services:
     environment:
       - OCTAVE_NO_GUI=true
       - PYTHONUNBUFFERED=1
-    command: ["bash", "-c", "echo 'RINEX Processing Environment Ready! Use: docker-compose exec rinexpos python3 python/readnav.py or docker-compose exec rinexpos octave --eval \"rinexnav\"' && tail -f /dev/null"]
+    command: ["bash", "-c", "echo 'RINEX Processing Environment Ready! Use: docker-compose exec rinexpos python3 python/readnav.py or docker-compose exec rinexpos bash -c \"cd matlab && octave rinexnav_enhanced.m\"' && tail -f /dev/null"]
