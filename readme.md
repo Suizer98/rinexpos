@@ -49,37 +49,31 @@ This project reads RINEX navigation files (`.n` files) containing GPS satellite 
 
 ### Quick Start
 
-Build and run the container:
+**Run Python processing:**
+```bash
+docker-compose run --rm rinexpos python3 python/rinexnav.py --file=data/chur1610.19n --interval=15 --plot
+```
 
+**Run Octave/MATLAB code:**
+```bash
+docker-compose run --rm rinexpos bash -c "cd matlab && octave rinexnav_enhanced.m"
+```
+
+**Run with explicit date:**
+```bash
+docker-compose run --rm rinexpos python3 python/rinexnav.py --file=data/brdc0680.20n --date=20,3,8 --interval=100 --plot
+```
+
+**For debugging (interactive container):**
 ```bash
 docker-compose up --build
+# Then in another terminal:
+docker-compose exec rinexpos bash
 ```
 
-Execute Octave/MATLAB code:
+**Plot existing CSV data:**
 ```bash
-docker-compose exec rinexpos bash -c "cd matlab && octave rinexnav_enhanced.m"
-```
-
-Execute Python code:
-```bash
-docker-compose exec rinexpos python3 python/rinexnav.py --file=data/chur1610.19n --interval=15 --plot
-```
-
-Execute Python code with explicit date (if needed):
-```bash
-docker-compose exec rinexpos python3 python/rinexnav.py --file=data/brdc0680.20n --date=20,3,8 --interval=15 --plot
-```
-
-Plot existing CSV data explicitly:
-```bash
-docker-compose exec rinexpos python3 python/plot_satellites.py results/chur1610_python.csv --max_epochs=1000
-```
-
-### Run black formatting
-
-To run code formatting for python files:
-```bash
-docker-compose exec rinexpos black python/
+docker-compose run --rm rinexpos python3 python/plot_satellites.py results/chur1610_python.csv --max_epochs=1000
 ```
 
 ## Sample Results
@@ -93,3 +87,21 @@ docker-compose exec rinexpos black python/
 ### Python
 
 ![Python](results/chur1610_python.png)
+
+## Testing
+
+Run linting and unit tests:
+
+```bash
+# Run all checks (linting + tests)
+docker-compose run --rm test
+
+# Run individual tools
+docker-compose run --rm test black python/     # Format code
+docker-compose run --rm test ruff check python/  # Lint code
+docker-compose run --rm test pytest tests/     # Run tests
+
+# Run with Semgrep (optional)
+export SEMGREP_APP_TOKEN=your_token_here
+docker-compose run --rm test
+```

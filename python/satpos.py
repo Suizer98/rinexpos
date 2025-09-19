@@ -34,7 +34,7 @@ def satpos(t, eph):
     # Extract ephemeris parameters
     if hasattr(eph, "data_vars"):
         # Handle georinex xarray format
-        svprn = 0  # Not used in calculation
+        # svprn = 0  # Not used in calculation (kept for reference)
 
         def safe_get(var_name, default=0):
             if var_name in eph:
@@ -45,7 +45,7 @@ def satpos(t, eph):
                     return val[0]
             return default
 
-        af2 = safe_get("SVclockDriftRate")
+        # af2 = safe_get("SVclockDriftRate")  # Unused but kept for reference
         M0 = safe_get("M0")
         roota = safe_get("sqrtA")  # sqrtA is already the square root of semi-major axis
         deltan = safe_get("DeltaN")
@@ -62,13 +62,12 @@ def satpos(t, eph):
         Omega0 = safe_get("Omega0")
         Omegadot = safe_get("OmegaDot")
         toe = safe_get("Toe")
-        af0 = safe_get("SVclockBias")
-        af1 = safe_get("SVclockDrift")
-        toc = toe  # Time of clock (same as toe in this case)
+        # af0 = safe_get("SVclockBias")  # Unused but kept for reference
+        # af1 = safe_get("SVclockDrift")  # Unused but kept for reference
     elif isinstance(eph, dict):
         # Handle dictionary format
-        svprn = eph.get("SVclockBias", 0)
-        af2 = eph.get("SVclockDriftRate", 0)
+        # svprn = eph.get("SVclockBias", 0)  # Unused but kept for reference
+        # af2 = eph.get("SVclockDriftRate", 0)  # Unused but kept for reference
         M0 = eph.get("M0", 0)
         roota = eph.get(
             "sqrtA", 0
@@ -87,13 +86,11 @@ def satpos(t, eph):
         Omega0 = eph.get("Omega0", 0)
         Omegadot = eph.get("OmegaDot", 0)
         toe = eph.get("Toe", 0)
-        af0 = eph.get("SVclockBias", 0)
-        af1 = eph.get("SVclockDrift", 0)
-        toc = toe  # Time of clock (same as toe in this case)
+        # toc = eph.get("Toe", 0)  # Time of clock (unused but kept for reference)
+        # af0 = eph.get("SVclockBias", 0)  # Unused but kept for reference
+        # af1 = eph.get("SVclockDrift", 0)  # Unused but kept for reference
     else:
         # Handle array format (MATLAB style)
-        svprn = eph[0]
-        af2 = eph[1]
         M0 = eph[2]
         roota = eph[3]
         deltan = eph[4]
@@ -110,9 +107,7 @@ def satpos(t, eph):
         Omega0 = eph[15]
         Omegadot = eph[16]
         toe = eph[17]
-        af0 = eph[18]
-        af1 = eph[19]
-        toc = eph[20]
+        # toc = eph[20]  # Time of clock (unused but kept for reference)
 
     # Procedure for coordinate calculation (Keplerian elements)
     A = roota * roota  # Semi-major axis (roota is sqrt(A))
@@ -124,7 +119,7 @@ def satpos(t, eph):
 
     # Solve Kepler's equation
     E = M
-    for i in range(10):
+    for _ in range(10):
         E_old = E
         E = M + ecc * np.sin(E)
         dE = np.mod(E - E_old, 2 * np.pi)

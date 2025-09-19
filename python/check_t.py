@@ -6,8 +6,6 @@ Based on MATLAB check_t.m
 @author: Based on Kai Borre's MATLAB implementation
 """
 
-import numpy as np
-
 
 def check_t(t):
     """

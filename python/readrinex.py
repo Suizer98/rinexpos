@@ -6,7 +6,6 @@ Based on MATLAB rinexe.m and get_eph.m
 @author: Based on Kai Borre's MATLAB implementation
 """
 
-import numpy as np
 import georinex as gr
 
 

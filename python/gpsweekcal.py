@@ -7,8 +7,8 @@ Based on MATLAB gpsweekcal.m
 """
 
 import numpy as np
-from julday import julday
 from gps_time import gps_time
+from julday import julday
 
 
 def gpsweekcal(date, interval):

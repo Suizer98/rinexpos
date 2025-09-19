@@ -6,16 +6,17 @@ Main Python script for RINEX processing and plotting
 @author: Based on MATLAB rinexnav_enhanced.m functionality
 """
 
-import numpy as np
 import argparse
 import os
-from gpsweekcal import gpsweekcal
-from readrinex import readrinex
-from find_eph import find_eph
-from satpos import satpos
+
+import numpy as np
 from ecef_to_lla import ecef_to_lla
-from plot_satellites import plot_satellites
+from find_eph import find_eph
 from gps_time import gps_time_to_datetime_iso
+from gpsweekcal import gpsweekcal
+from plot_satellites import plot_satellites
+from readrinex import readrinex
+from satpos import satpos
 
 
 def extract_date_from_rinex(file_path):
@@ -34,7 +35,7 @@ def extract_date_from_rinex(file_path):
         [year, month, day] in format [YY, MM, DD]
     """
     try:
-        with open(file_path, "r") as f:
+        with open(file_path) as f:
             # Skip header lines until we find the first data line
             for line in f:
                 line = line.strip()

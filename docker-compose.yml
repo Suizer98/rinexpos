@@ -8,4 +8,57 @@ services:
     environment:
       - OCTAVE_NO_GUI=true
       - PYTHONUNBUFFERED=1
-    command: ["bash", "-c", "echo 'RINEX Processing Environment Ready! Use: docker-compose exec rinexpos python3 python/rinexnav.py --file=data/chur1610.19n  or docker-compose exec rinexpos bash -c \"cd matlab && octave rinexnav_enhanced.m\"' && tail -f /dev/null"]
+    command: 
+      - bash
+      - -c
+      - |
+        echo 'RINEX Processing Environment Ready!'
+        echo ''
+        echo 'Python processing:'
+        echo '  docker-compose exec rinexpos python3 python/rinexnav.py --file=data/chur1610.19n'
+        echo ''
+        echo 'MATLAB/Octave processing:'
+        echo '  docker-compose exec rinexpos bash -c "cd matlab && octave rinexnav_enhanced.m"'
+        echo ''
+        tail -f /dev/null
+
+  test:
+    image: rinexpos-test
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    volumes:
+      - ./:/usr/src/app
+      - ./.git:/usr/src/app/.git
+      - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: /usr/src/app
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN:-}
+    command: 
+      - bash
+      - -c
+      - |
+        echo '========== Running Checks Tools ==========' &&
+        
+        black --check python/ && echo 'Black OK' &&
+        
+        ruff check python/ && echo 'Ruff OK' &&
+
+        bandit -r python/ && echo 'Bandit OK' &&
+
+        safety check && echo 'Safety OK' &&
+
+        if [ -n "$SEMGREP_APP_TOKEN" ]; then
+          echo 'Running Semgrep...' &&
+          git config --global --add safe.directory /usr/src/app &&
+          semgrep ci && echo 'Semgrep OK'
+        else
+          echo 'Skipping Semgrep (no token provided)'
+        fi &&
+
+        echo '========== Running Unit Tests ==========' &&
+        pytest tests/ -v --tb=short --disable-warnings &&
+        echo '========== All Tests Completed =========='
+      # mypy python/ && echo 'MyPy OK'

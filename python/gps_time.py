@@ -6,8 +6,9 @@ Based on MATLAB gps_time.m
 @author: Based on Kai Borre's MATLAB implementation
 """
 
-import numpy as np
 from datetime import datetime, timedelta
+
+import numpy as np
 
 
 def gps_time(julday):

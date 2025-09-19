@@ -4,11 +4,11 @@ Plot satellites from CSV file
 Standalone script for plotting satellite positions from existing CSV files
 """
 
-import numpy as np
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import argparse
 import os
+
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 def plot_satellites(csv_file, max_epochs=1000, output_file=None):

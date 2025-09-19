@@ -43,7 +43,7 @@ def find_eph(Eph, sv, time):
         # First, get all valid (non-NaN) ephemeris records
         valid_indices = []
         toe_values = []
-        for i, t in enumerate(sat_data.time.values):
+        for i, _ in enumerate(sat_data.time.values):
             if not np.isnan(sat_data["Toe"].isel(time=i).values):
                 valid_indices.append(i)
                 toe_values.append(sat_data["Toe"].isel(time=i).values)
