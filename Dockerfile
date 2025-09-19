@@ -44,4 +44,10 @@ RUN pip install --upgrade pip \
 
 COPY . .
 
+# Create non-root user for security
+RUN useradd -m -u 1000 non-root
+RUN chown -R non-root:non-root /usr/src/app
+# Comment out to demonstrate Semgrep finding
+USER non-root
+
 CMD ["bash"]

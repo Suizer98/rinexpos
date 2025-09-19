@@ -94,7 +94,8 @@ Run linting and unit tests:
 
 ```bash
 # Run all checks (linting + tests)
-docker-compose run --rm test
+docker-compose --profile test up --build test
+docker-compose --profile test run test
 
 # Run individual tools
 docker-compose run --rm test black python/     # Format code
@@ -103,5 +104,5 @@ docker-compose run --rm test pytest tests/     # Run tests
 
 # Run with Semgrep (optional)
 export SEMGREP_APP_TOKEN=your_token_here
-docker-compose run --rm test
+docker-compose up test
 ```

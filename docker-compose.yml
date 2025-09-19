@@ -36,6 +36,8 @@ services:
       - PYTHONUNBUFFERED=1
       - PYTHONDONTWRITEBYTECODE=1
       - SEMGREP_APP_TOKEN=${SEMGREP_APP_TOKEN:-}
+    profiles:
+      - test
     command: 
       - bash
       - -c
@@ -58,7 +60,7 @@ services:
           echo 'Skipping Semgrep (no token provided)'
         fi &&
 
-        echo '========== Running Unit Tests ==========' &&
         pytest tests/ -v --tb=short --disable-warnings &&
+        
         echo '========== All Tests Completed =========='
       # mypy python/ && echo 'MyPy OK'
