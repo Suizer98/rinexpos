@@ -42,7 +42,7 @@ services:
       - bash
       - -c
       - |
-        echo '========== Running Checks Tools ==========' &&
+        echo '=============== Running Checks Tools ===============' &&
         
         black --check python/ && echo 'Black OK' &&
         
@@ -53,14 +53,25 @@ services:
         safety check && echo 'Safety OK' &&
 
         if [ -n "$SEMGREP_APP_TOKEN" ]; then
-          echo 'Running Semgrep...' &&
           git config --global --add safe.directory /usr/src/app &&
-          semgrep ci && echo 'Semgrep OK'
+          semgrep \
+            --config=p/python \
+            --config=p/dockerfile \
+            --config=p/ci \
+            --config=p/owasp-top-ten \
+            --config=p/security-audit \
+            --config=p/secrets \
+            --config=p/supply-chain \
+            --metrics=off \
+            --error \
+            --no-git-ignore . && echo 'Semgrep OK'
         else
           echo 'Skipping Semgrep (no token provided)'
         fi &&
 
         pytest tests/ -v --tb=short --disable-warnings &&
         
-        echo '========== All Tests Completed =========='
+        echo '=============== All Tests Completed ==============='
       # mypy python/ && echo 'MyPy OK'
+      # Original Semgrep cloud upload results version
+      # semgrep ci --supply-chain && echo 'Semgrep OK'
