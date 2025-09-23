@@ -102,7 +102,10 @@ docker-compose run --rm test black python/     # Format code
 docker-compose run --rm test ruff check python/  # Lint code
 docker-compose run --rm test pytest tests/     # Run tests
 
-# Run with Semgrep (optional)
-export SEMGREP_APP_TOKEN=your_token_here
+# Run with Semgrep
 docker-compose up test
+docker-compose run --rm test bash -c "git config --global --add safe.directory /usr/src/app && semgrep ci --dry-run"
+
+# Or with customised rules
+docker-compose run --rm test semgrep --config=p/python --config=p/dockerfile --config=p/ci --config=p/owasp-top-ten --config=p/security-audit --config=p/secrets --config=p/supply-chain --metrics=off --error --no-git-ignore .
 ```

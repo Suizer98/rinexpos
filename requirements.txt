@@ -1,5 +1,5 @@
 # certifi==2024.6.2  # Commented out to test vulnerability detection
-certifi>=2024.07.04 # Older version with known vulnerabilities
+certifi>=2024.07.04
 cftime==1.6.4
 contourpy==1.2.1
 cycler==0.12.1
