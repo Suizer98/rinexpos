@@ -76,17 +76,10 @@ docker-compose exec rinexpos bash
 docker-compose run --rm rinexpos python3 python/plot_satellites.py results/chur1610_python.csv --max_epochs=1000
 ```
 
-## Sample Results
-
-*3D visualization of GPS satellite orbits showing the complex trajectories of satellites over time, with each satellite represented by a unique colored line. Both are showing the first 1000 epoch from the derieved data*
-
-### MATLAB
-
-![MATLAB](results/chur1610_matlab.png)
-
-### Python
-
-![Python](results/chur1610_python.png)
+**Create animation:**
+```bash
+docker-compose run --rm rinexpos python3 python/plot_satellites.py results/chur1610_python.csv --animation --max_epochs=1000
+```
 
 ## Testing
 
@@ -109,3 +102,19 @@ docker-compose run --rm test bash -c "git config --global --add safe.directory /
 # Or with customised rules
 docker-compose run --rm test semgrep --config=p/python --config=p/dockerfile --config=p/ci --config=p/owasp-top-ten --config=p/security-audit --config=p/secrets --config=p/supply-chain --metrics=off --error --no-git-ignore .
 ```
+
+## Sample Results
+
+*3D visualization of GPS satellite orbits showing the complex trajectories of satellites over time, with each satellite represented by a unique colored line. Both are showing the first 1000 epoch from the derieved data*
+
+### Python
+
+![Python](results/chur1610_python.png)
+
+*Animated orbits*
+
+![Python Animation](results/chur1610_python_animation.gif)
+
+### MATLAB
+
+![MATLAB](results/chur1610_matlab.png)
