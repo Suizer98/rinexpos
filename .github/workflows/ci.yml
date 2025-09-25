@@ -63,6 +63,11 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         
+    - name: Pull images
+      run: |
+        docker pull ghcr.io/suizer98/rinexpos:latest || echo "Main image not found, will build"
+        docker pull ghcr.io/suizer98/rinexpos-test:latest || echo "Test image not found, will build"
+        
     - name: Run complete test suite
       run: |
         docker compose --profile test run test
