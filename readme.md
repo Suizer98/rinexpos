@@ -51,17 +51,22 @@ This project reads RINEX navigation files (`.n` files) containing GPS satellite 
 
 **Run Python processing:**
 ```bash
-docker-compose run --rm rinexpos python3 python/rinexnav.py --file=data/chur1610.19n --interval=15 --plot
+docker-compose run --rm rinexpos \
+  python3 python/rinexnav.py \
+  --file=data/chur1610.19n --interval=15 --plot
 ```
 
 **Run Octave/MATLAB code:**
 ```bash
-docker-compose run --rm rinexpos bash -c "cd matlab && octave rinexnav_enhanced.m"
+docker-compose run --rm rinexpos \
+  bash -c "cd matlab && octave rinexnav_enhanced.m"
 ```
 
 **Run with explicit date:**
 ```bash
-docker-compose run --rm rinexpos python3 python/rinexnav.py --file=data/brdc0680.20n --date=20,3,8 --interval=100 --plot
+docker-compose run --rm rinexpos \
+  python3 python/rinexnav.py \
+  --file=data/brdc0680.20n --date=20,3,8 --interval=100 --plot
 ```
 
 **For debugging (interactive container):**
@@ -73,12 +78,16 @@ docker-compose exec rinexpos bash
 
 **Plot existing CSV data:**
 ```bash
-docker-compose run --rm rinexpos python3 python/plot_satellites.py results/chur1610_python.csv --max_epochs=1000
+docker-compose run --rm rinexpos \
+  python3 python/plot_satellites.py \
+  results/chur1610_python.csv --max_epochs=1000
 ```
 
 **Create animation:**
 ```bash
-docker-compose run --rm rinexpos python3 python/plot_satellites.py results/chur1610_python.csv --animation --max_epochs=1000
+docker-compose run --rm rinexpos \
+  python3 python/plot_satellites.py \
+  results/chur1610_python.csv --animation --max_epochs=1000
 ```
 
 ## Testing
@@ -97,10 +106,21 @@ docker-compose run --rm test pytest tests/     # Run tests
 
 # Run with Semgrep
 docker-compose up test
-docker-compose run --rm test bash -c "git config --global --add safe.directory /usr/src/app && semgrep ci --dry-run"
+docker-compose run --rm test bash -c \
+  "git config --global --add safe.directory /usr/src/app && semgrep ci --dry-run"
 
 # Or with customised rules
-docker-compose run --rm test semgrep --config=p/python --config=p/dockerfile --config=p/ci --config=p/owasp-top-ten --config=p/security-audit --config=p/secrets --config=p/supply-chain --metrics=off --error --no-git-ignore .
+docker-compose run --rm test semgrep \
+  --config=p/python \
+  --config=p/dockerfile \
+  --config=p/ci \
+  --config=p/owasp-top-ten \
+  --config=p/security-audit \
+  --config=p/secrets \
+  --config=p/supply-chain \
+  --metrics=off \
+  --error \
+  --no-git-ignore .
 ```
 
 ## Sample Results
