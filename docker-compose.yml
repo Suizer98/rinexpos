@@ -54,7 +54,7 @@ services:
 
         if [ -n "$SEMGREP_APP_TOKEN" ]; then
           git config --global --add safe.directory /usr/src/app &&
-          semgrep ci --dry-run --quiet && echo 'Semgrep OK'
+          semgrep ci && echo 'Semgrep OK'
         else
           echo 'Skipping Semgrep (no token provided)'
         fi &&
