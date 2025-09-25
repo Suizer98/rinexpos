@@ -27,18 +27,8 @@ This project reads RINEX navigation files (`.n` files) containing GPS satellite 
 
 ### MATLAB/Octave
 
-1. Install Octave and dependencies on your system (Linux or WSL2):
-   ```bash
-   sudo apt-get update -y --no-install-recommends
-   sudo apt-get install -y --no-install-recommends \
-       octave \
-       octave-netcdf \
-       libnetcdf-dev \
-       gnuplot \
-       ghostscript \
-       libcairo2-dev \
-       libpango1.0-dev
-   ```
+1. Install Octave and required dependencies (see [Dockerfile](Dockerfile) for full list)
+
 2. Run the script:
    ```bash
    cd matlab
@@ -90,6 +80,21 @@ docker-compose run --rm rinexpos \
   results/chur1610_python.csv --animation --max_epochs=1000
 ```
 
+### Manual Image Building and Push
+
+**Build and push:**
+```bash
+# Login
+echo $GITHUB_TOKEN | docker login ghcr.io -u YOUR_USERNAME --password-stdin
+
+# Build, tag, and push
+docker-compose build
+docker tag rinexpos ghcr.io/suizer98/rinexpos:latest
+docker tag rinexpos-test ghcr.io/suizer98/rinexpos-test:latest
+docker push ghcr.io/suizer98/rinexpos:latest
+docker push ghcr.io/suizer98/rinexpos-test:latest
+```
+
 ## Testing
 
 Run linting and unit tests:
@@ -129,11 +134,9 @@ docker-compose run --rm test semgrep \
 
 ### Python
 
-![Python](results/chur1610_python.png)
-
-*Animated orbits*
-
 ![Python Animation](results/chur1610_python_animation.gif)
+
+![Python](results/chur1610_python.png)
 
 ### MATLAB
 
