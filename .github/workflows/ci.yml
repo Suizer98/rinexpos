@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 2 * * 1'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    environment: test
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+        
+    - name: Run complete test suite
+      run: |
+        docker compose --profile test run test
+      env:
+        SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+        
+    # - name: Test static plotting
+    #   run: |
+    #     # Test static plot generation
+    #     docker compose run --rm rinexpos python3 python/plot_satellites.py results/chur1610_python.csv --max_epochs=100
+        
+    - name: Verify output files
+      run: |
+        ls -la results/
+        test -f results/chur1610_python.png
+        
+    # - name: Upload test results
+    #   uses: actions/upload-artifact@v4
+    #   if: always()
+    #   with:
+    #     name: test-results
+    #     path: |
+    #       coverage.xml
+    #       results/
