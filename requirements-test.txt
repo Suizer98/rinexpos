@@ -1,0 +1,13 @@
+# Include all main application dependencies
+-r requirements.txt
+
+# Testing and development tools
+black
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-mock>=3.10.0
+ruff>=0.1.0
+bandit>=1.7.0
+mypy>=1.0.0
+safety>=2.0.0
+semgrep>=1.0.0

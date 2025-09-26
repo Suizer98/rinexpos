@@ -97,24 +97,51 @@ docker push ghcr.io/suizer98/rinexpos-test:latest
 
 ## Testing
 
-Run linting and unit tests:
+Run whole test suite:
 
 ```bash
-# Run all checks (linting + tests)
 docker-compose --profile test up --build test
 docker-compose --profile test run test
+```
 
-# Run individual tools
-docker-compose run --rm test black python/     # Format code
-docker-compose run --rm test ruff check python/  # Lint code
-docker-compose run --rm test pytest tests/     # Run tests
+To run black check suite separately:
+```bash
+docker-compose run --rm test black check .     # Check code formatting
+docker-compose run --rm test black .           # Format code
+```
 
-# Run with Semgrep
-docker-compose up test
+To test with ruff and try out its auto-corrected function
+```bash
+docker-compose run --rm test ruff check .      # Lint code
+docker-compose run --rm test ruff check --fix . # Fix linting issues
+```
+
+To run bandit security analysis:
+```bash
+docker-compose run --rm test bandit -r .       # Security analysis
+```
+
+To run safety checks:
+```bash
+docker-compose run --rm test safety check      # Check for dependency vulnerabilities
+```
+
+Customised unit tests:
+```bash
+docker-compose run --rm test pytest tests/
+```
+
+Semgrep:
+```bash
+# Full scan
+docker-compose run --rm test bash -c \
+  "git config --global --add safe.directory /usr/src/app && semgrep ci"
+
+# To run locally without uploading results
 docker-compose run --rm test bash -c \
   "git config --global --add safe.directory /usr/src/app && semgrep ci --dry-run"
 
-# Or with customised rules
+# Or with Semgrep customised rules
 docker-compose run --rm test semgrep \
   --config=p/python \
   --config=p/dockerfile \

@@ -30,7 +30,7 @@ services:
     volumes:
       - ./:/usr/src/app
       - ./.git:/usr/src/app/.git
-      - /var/run/docker.sock:/var/run/docker.sock
+      # - /var/run/docker.sock:/var/run/docker.sock
     working_dir: /usr/src/app
     environment:
       - PYTHONUNBUFFERED=1
@@ -44,11 +44,11 @@ services:
       - |
         echo '=============== Running Checks Tools ===============' &&
         
-        black --check python/ && echo 'Black OK' &&
+        black --check . && echo 'Black OK' &&
         
-        ruff check python/ && echo 'Ruff OK' &&
+        ruff check . && echo 'Ruff OK' &&
 
-        bandit -r python/ && echo 'Bandit OK' &&
+        bandit -r . && echo 'Bandit OK' &&
 
         safety check && echo 'Safety OK' &&
 
