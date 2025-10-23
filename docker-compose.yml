@@ -1,6 +1,6 @@
 services:
   rinexpos:
-    image: ghcr.io/suizer98/rinexpos:latest
+    image: suizer98/rinexpos:latest
     build: .
     volumes:
       - ./:/usr/src/app
@@ -23,7 +23,7 @@ services:
         tail -f /dev/null
 
   test:
-    image: ghcr.io/suizer98/python-test-kit:latest
+    image: suizer98/python-test-kit:latest
     # build:
     #   context: .
     #   dockerfile: Dockerfile.test

@@ -85,14 +85,14 @@ docker-compose run --rm rinexpos \
 **Build and push:**
 ```bash
 # Login
-echo $GITHUB_TOKEN | docker login ghcr.io -u YOUR_USERNAME --password-stdin
+echo $GITHUB_TOKEN | docker login --username suizer98
 
 # Build, tag, and push
 docker-compose build
-docker tag rinexpos ghcr.io/suizer98/rinexpos:latest
-docker tag rinexpos-test ghcr.io/suizer98/rinexpos-test:latest
-docker push ghcr.io/suizer98/rinexpos:latest
-docker push ghcr.io/suizer98/rinexpos-test:latest
+docker tag rinexpos suizer98/rinexpos:latest
+docker tag rinexpos-test suizer98/rinexpos-test:latest
+docker push suizer98/rinexpos:latest
+docker push suizer98/rinexpos-test:latest
 ```
 
 ## Testing
