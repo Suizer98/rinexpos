@@ -23,10 +23,10 @@ services:
         tail -f /dev/null
 
   test:
-    image: ghcr.io/suizer98/rinexpos-test:latest
-    build:
-      context: .
-      dockerfile: Dockerfile.test
+    image: ghcr.io/suizer98/python-test-kit:latest
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile.test
     volumes:
       - ./:/usr/src/app
       - ./.git:/usr/src/app/.git
