@@ -104,56 +104,7 @@ docker-compose --profile test up --build test
 docker-compose --profile test run test
 ```
 
-To run black check suite separately:
-```bash
-docker-compose run --rm test black check .     # Check code formatting
-docker-compose run --rm test black .           # Format code
-```
-
-To test with ruff and try out its auto-corrected function
-```bash
-docker-compose run --rm test ruff check .      # Lint code
-docker-compose run --rm test ruff check --fix . # Fix linting issues
-```
-
-To run bandit security analysis:
-```bash
-docker-compose run --rm test bandit -r .       # Security analysis
-```
-
-To run safety checks:
-```bash
-docker-compose run --rm test safety check      # Check for dependency vulnerabilities
-```
-
-Customised unit tests:
-```bash
-docker-compose run --rm test pytest tests/
-```
-
-Semgrep:
-```bash
-# Full scan
-docker-compose run --rm test bash -c \
-  "git config --global --add safe.directory /usr/src/app && semgrep ci"
-
-# To run locally without uploading results
-docker-compose run --rm test bash -c \
-  "git config --global --add safe.directory /usr/src/app && semgrep ci --dry-run"
-
-# Or with Semgrep customised rules
-docker-compose run --rm test semgrep \
-  --config=p/python \
-  --config=p/dockerfile \
-  --config=p/ci \
-  --config=p/owasp-top-ten \
-  --config=p/security-audit \
-  --config=p/secrets \
-  --config=p/supply-chain \
-  --metrics=off \
-  --error \
-  --no-git-ignore .
-```
+See [PythonTestKit](https://github.com/Suizer98/PythonTestKit) for more details.
 
 ## Sample Results
 
