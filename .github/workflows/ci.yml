@@ -40,6 +40,7 @@ jobs:
             - 'Dockerfile'
             - 'Dockerfile.test'
             - 'requirements.txt'
+            - 'requirements-test.txt'
             - 'pyproject.toml'
           python:
             - 'python/**'
@@ -55,20 +56,16 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         
-    - name: Pull images (optional)
+    - name: Prepare test image
       run: |
-        docker pull suizer98/rinexpos:latest || echo "Main image not found, will build"
-        docker pull suizer98/python-test-kit:latest || echo "Test image not found, will build"
-      continue-on-error: true
+        echo "Attempting to pull test image from registry..."
+        docker pull suizer98/python-test-kit:latest || echo "Test image not found in registry, will build locally"
         
-    - name: Build test image locally (if external not available)
-      run: |
-        # Check if the external test image is available
         if ! docker image inspect suizer98/python-test-kit:latest >/dev/null 2>&1; then
-          echo "External test image not available, building locally..."
+          echo "Building test image locally..."
           docker build -f Dockerfile.test -t suizer98/python-test-kit:latest .
         else
-          echo "External test image is available"
+          echo "Test image is available from registry"
         fi
       continue-on-error: true
         
