@@ -12,28 +12,40 @@ This project reads RINEX navigation files (`.n` files) containing GPS satellite 
 
 ### Python
 
-1. Install Anaconda on your PC
-2. Create the environment and install dependencies:
-   ```bash
-   conda create -n rinex python=3.10
-   conda activate rinex
-   pip install -r requirements.txt
-   ```
-3. Run the script:
-   ```bash
-   conda activate rinex
-   python3 python/rinexnav.py --file=data/chur1610.19n --interval=15 --plot
-   ```
+This project targets **Python 3.10**. Use 3.10 for prebuilt wheels (e.g. `netcdf4`) and to match CI/Docker.
+
+#### Using uv
+
+Install Astral UV from [here](https://docs.astral.sh/uv/getting-started/installation/)
+
+Create a virtual environment and install dependencies:
+```bash
+uv python install 3.10
+uv venv --python 3.10
+source .venv/bin/activate
+uv pip install -r requirements.txt
+```
+
+#### Using Anaconda
+
+Install Anaconda from [here](https://www.anaconda.com/download)
+
+Create the environment and install dependencies:
+```bash
+conda create -n rinex python=3.10
+conda activate rinex
+pip install -r requirements.txt
+```
 
 ### MATLAB/Octave
 
-1. Install Octave and required dependencies (see [Dockerfile](Dockerfile) for full list)
+Install Octave and required dependencies (see [Dockerfile](Dockerfile) for full list)
 
-2. Run the script:
-   ```bash
-   cd matlab
-   octave rinexnav_enhanced.m
-   ```
+Run the script:
+```bash
+cd matlab
+octave rinexnav_enhanced.m
+```
 
 ## Docker Setup
 
