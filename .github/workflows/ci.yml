@@ -56,7 +56,7 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         
-    - name: Prepare test image
+    - name: Prepare test image for container
       run: |
         echo "Attempting to pull test image from registry..."
         docker pull suizer98/python-test-kit:latest || echo "Test image not found in registry, will build locally"
@@ -69,7 +69,7 @@ jobs:
         fi
       continue-on-error: true
         
-    - name: Run complete test suite
+    - name: Run complete test suite in container
       run: |
         docker compose --profile test run test
       env:
