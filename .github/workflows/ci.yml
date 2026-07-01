@@ -67,14 +67,12 @@ jobs:
         else
           echo "Test image is available from registry"
         fi
-      continue-on-error: true
         
     - name: Run complete test suite in container
       run: |
         docker compose --profile test run test
       env:
         SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
-      continue-on-error: true
         
     # - name: Test static plotting
     #   run: |
