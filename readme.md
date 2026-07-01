@@ -8,6 +8,20 @@ This project reads RINEX navigation files (`.n` files) containing GPS satellite 
 
 ![Tech stacks](https://skillicons.dev/icons?i=python,anaconda,matlab,octave,docker,bash)
 
+## Sample Results
+
+*3D visualization of GPS satellite orbits showing the complex trajectories of satellites over time, with each satellite represented by a unique colored line. Both are showing the first 1000 epoch from the derieved data*
+
+### Python
+
+![Python Animation](results/chur1610_python_animation.gif)
+
+![Python](results/chur1610_python.png)
+
+### MATLAB
+
+![MATLAB](results/chur1610_matlab.png)
+
 ## Local Setup
 
 ### Python
@@ -117,17 +131,3 @@ docker-compose --profile test run test
 ```
 
 See [PythonTestKit](https://github.com/Suizer98/PythonTestKit) for more details.
-
-## Sample Results
-
-*3D visualization of GPS satellite orbits showing the complex trajectories of satellites over time, with each satellite represented by a unique colored line. Both are showing the first 1000 epoch from the derieved data*
-
-### Python
-
-![Python Animation](results/chur1610_python_animation.gif)
-
-![Python](results/chur1610_python.png)
-
-### MATLAB
-
-![MATLAB](results/chur1610_matlab.png)
