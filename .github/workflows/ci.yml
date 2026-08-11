@@ -77,7 +77,7 @@ jobs:
     # - name: Test static plotting
     #   run: |
     #     # Test static plot generation
-    #     docker compose run --rm rinexpos python3 python/plot_satellites.py results/chur1610_python.csv --max_epochs=100
+    #     docker compose run --rm rinexpos python3 python/main.py --csv=results/chur1610_python.csv --max_epochs=100
         
     - name: Verify output files
       run: |

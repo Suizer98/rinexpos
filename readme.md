@@ -95,15 +95,15 @@ docker-compose exec rinexpos bash
 **Plot existing CSV data:**
 ```bash
 docker-compose run --rm rinexpos \
-  python3 python/plot_satellites.py \
-  results/chur1610_python.csv --max_epochs=1000
+  python3 python/main.py \
+  --csv=results/chur1610_python.csv --max_epochs=1000
 ```
 
 **Create animation:**
 ```bash
 docker-compose run --rm rinexpos \
-  python3 python/plot_satellites.py \
-  results/chur1610_python.csv --animation --max_epochs=1000
+  python3 python/main.py \
+  --csv=results/chur1610_python.csv --animation --max_epochs=1000
 ```
 
 ### Manual Image Building and Push

@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Plot satellites from CSV file
-Standalone script for plotting satellite positions from existing CSV files
+Plot satellite positions from CSV (ECEF).
+Scientific plotting helpers; CLI lives in main.py.
 """
 
-import argparse
 import os
 
 import matplotlib.animation as animation
@@ -233,51 +232,3 @@ def plot_animation(csv_file, max_epochs=1000, output_file=None, format="gif"):
 
         traceback.print_exc()
         return None
-
-
-def main():
-    parser = argparse.ArgumentParser(
-        description="Plot satellite positions from CSV file"
-    )
-    parser.add_argument(
-        "csv_file", help="Path to CSV file containing satellite positions"
-    )
-    parser.add_argument(
-        "--max_epochs",
-        type=int,
-        default=1000,
-        help="Maximum number of epochs to plot (default: 1000)",
-    )
-    parser.add_argument("--output", "-o", help="Output file path")
-    parser.add_argument(
-        "--animation",
-        "-a",
-        action="store_true",
-        help="Create animated plot instead of static plot",
-    )
-    parser.add_argument(
-        "--format",
-        choices=["gif", "mp4"],
-        default="gif",
-        help="Output format for animation: gif or mp4 (default: gif)",
-    )
-
-    args = parser.parse_args()
-
-    if not os.path.exists(args.csv_file):
-        print(f"Error: CSV file '{args.csv_file}' not found!")
-        return 1
-
-    try:
-        if args.animation:
-            plot_animation(args.csv_file, args.max_epochs, args.output, args.format)
-        else:
-            plot_satellites(args.csv_file, args.max_epochs, args.output)
-        return 0
-    except Exception as e:
-        print(f"Error plotting satellites: {e}")
-        return 1
-
-
-if __name__ == "__main__":
-    exit(main())
