@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 Satellite Position Calculator
-Main Python script for RINEX processing and plotting
+RINEX navigation processing based on MATLAB rinexnav_enhanced.m
 
 @author: Based on MATLAB rinexnav_enhanced.m functionality
 """
 
-import argparse
 import os
 
 import numpy as np
@@ -62,88 +61,40 @@ def extract_date_from_rinex(file_path):
         return None
 
 
-# Parse command line arguments
-parser = argparse.ArgumentParser(
-    description="Satellite position calculator with plotting"
-)
-parser.add_argument(
-    "--file", type=str, default="data/brdc0680.20n", help="RINEX navigation file"
-)
-parser.add_argument(
-    "--date",
-    type=str,
-    default=None,
-    help="Date in format YY,MM,DD (like MATLAB). If not provided, will be extracted from RINEX file",
-)
-parser.add_argument("--interval", type=int, default=15, help="Time interval in seconds")
-parser.add_argument(
-    "--plot", action="store_true", help="Generate 3D plot of satellite orbits"
-)
-parser.add_argument(
-    "--max_epochs", type=int, default=1000, help="Maximum epochs to plot"
-)
-args = parser.parse_args()
+def yy_to_year(yy):
+    """Convert 2-digit year to 4-digit year (<86 = 20**, >=86 = 19**)."""
+    # <86 = 20**, >=86 = 19**
+    if yy < 86:
+        return yy + 2000
+    return yy + 1900
 
 
-def main():
-    print("\n--- Satellite Position Calculator ---")
-    print(f"RINEX file: {args.file}")
-    print(f"Interval: {args.interval} seconds")
-    print(f"Plot: {args.plot}\n")
+def compute_svpos(nav_data, mytime, max_prn=32):
+    """
+    Compute satellite ECEF positions for all epochs and PRNs 1..max_prn.
 
-    # Determine date - either from command line or extract from RINEX file
-    if args.date is not None:
-        # Parse date from command line (format: YY,MM,DD like MATLAB)
-        date_parts = [int(x.strip()) for x in args.date.split(",")]
-        if len(date_parts) != 3:
-            raise ValueError("Date must be in format YY,MM,DD")
-        yy, month, day = date_parts
-        print(f"Using provided date: {args.date}")
-    else:
-        # Extract date from RINEX file
-        print("Extracting date from RINEX file...")
-        date_parts = extract_date_from_rinex(args.file)
-        if date_parts is None:
-            raise ValueError(
-                "Could not extract date from RINEX file. Please provide --date argument."
-            )
-        yy, month, day = date_parts
-        print(f"Extracted date from RINEX: {yy},{month},{day}")
+    Parameters:
+    -----------
+    nav_data : xarray.Dataset
+        Navigation data from readrinex
+    mytime : numpy.ndarray
+        Time series from gpsweekcal, columns [week, sow]
+    max_prn : int
+        Maximum GPS PRN number (default 32)
 
-    # Convert 2-digit year to 4-digit year
-    if yy < 86:  # <86 = 20**, >86 = 19**
-        year = yy + 2000
-    else:
-        year = yy + 1900
-
-    # Generate time series for 24 hours
-    print("Generating time series...")
-    mytime = gpsweekcal([year, month, day], args.interval)
-    rwt, colt = mytime.shape
-    print(f"Generated {rwt} time epochs")
-
-    # Load RINEX navigation file
-    print("Loading RINEX navigation file...")
-    nav_data = readrinex(args.file)
-    if nav_data is None:
-        print("Failed to load RINEX file")
-        return
-
-    print(f"Loaded navigation data: {nav_data}")
-
-    # Get available satellites
+    Returns:
+    --------
+    svpos : numpy.ndarray
+        Stacked positions [time, sv, X, Y, Z] for all epochs
+    successful_calculations : int
+        Number of successful satpos evaluations
+    """
     available_sats = nav_data.sv.values
-    print(f"Available satellites: {len(available_sats)} - {available_sats}")
+    rwt = mytime.shape[0]
 
-    # Process GPS satellites dynamically with 32 threshold
-    max_prn = 32  # Maximum GPS PRNs (threshold)
-    print(f"Processing up to {max_prn} satellites (1-{max_prn}) with dynamic discovery")
-
-    # Initialize arrays for satellite positions
-    svposh = np.zeros((max_prn, 5))  # [time, sv, X, Y, Z]
+    # Initialize arrays for satellite positions [time, sv, X, Y, Z]
+    svposh = np.zeros((max_prn, 5))
     svposc = []
-
-    print("Computing satellite positions...")
     successful_calculations = 0
 
     for i in range(rwt):
@@ -181,34 +132,39 @@ def main():
         if (i + 1) % 1000 == 0:
             print(f"Processed {i + 1}/{rwt} epochs...")
 
-    print(f"Successful calculations: {successful_calculations}")
-
     # Convert to single array
-    svpos = np.vstack(svposc)
-    print(f"Computed {svpos.shape[0]} satellite positions")
+    return np.vstack(svposc), successful_calculations
 
+
+def save_svpos_csv(svpos, name, year, month, day, results_dir="results"):
+    """
+    Save ECEF and lat/lon/alt CSV results.
+
+    Returns:
+    --------
+    csv_filename : str
+        Path to ECEF CSV
+    lla_filename : str
+        Path to lat/lon/alt CSV
+    """
     # Create results directory if it doesn't exist
-    os.makedirs("results", exist_ok=True)
+    os.makedirs(results_dir, exist_ok=True)
 
-    # Get input filename without extension
-    name = os.path.splitext(os.path.basename(args.file))[0]
-
-    # Save CSV data
-    csv_filename = f"results/{name}.csv"
+    # Save CSV data (ECEF)
+    csv_filename = f"{results_dir}/{name}.csv"
     np.savetxt(csv_filename, svpos, delimiter=",", fmt="%.10f")
     print(f"✓ Saved: {csv_filename}")
 
     # Also save with lat/lon/alt format with readable dates
-    lla_filename = f"results/{name}_latlonalt.csv"
+    lla_filename = f"{results_dir}/{name}_latlonalt.csv"
     lla_data = []
     for row in svpos:
+        # Convert GPS time to readable datetime
+        readable_time = gps_time_to_datetime_iso(row[0], year, month, day)
         if not np.isnan(row[2]):  # If X coordinate is not NaN
             lat, lon, alt = ecef_to_lla(row[2], row[3], row[4])
-            # Convert GPS time to readable datetime
-            readable_time = gps_time_to_datetime_iso(row[0], year, month, day)
             lla_data.append([readable_time, int(row[1]), lat, lon, alt])
         else:
-            readable_time = gps_time_to_datetime_iso(row[0], year, month, day)
             lla_data.append([readable_time, int(row[1]), np.nan, np.nan, np.nan])
 
     # Save as CSV with proper formatting
@@ -223,17 +179,110 @@ def main():
                 )
     print(f"✓ Saved: {lla_filename}")
 
+    return csv_filename, lla_filename
+
+
+def process_rinex(
+    file_path,
+    date=None,
+    interval=15,
+    plot=False,
+    max_epochs=1000,
+    max_prn=32,
+):
+    """
+    Process a RINEX navigation file and compute satellite positions.
+
+    Parameters:
+    -----------
+    file_path : str
+        Path to RINEX navigation file
+    date : list or None
+        [YY, MM, DD]. If None, extracted from the RINEX file
+    interval : int
+        Time interval in seconds
+    plot : bool
+        Generate 3D plot of satellite orbits
+    max_epochs : int
+        Maximum epochs to plot
+    max_prn : int
+        Maximum GPS PRN number
+
+    Returns:
+    --------
+    svpos : numpy.ndarray
+        Satellite positions [time, sv, X, Y, Z]
+    csv_filename : str
+        Path to saved ECEF CSV
+    """
+    print("\n--- Satellite Position Calculator ---")
+    print(f"RINEX file: {file_path}")
+    print(f"Interval: {interval} seconds")
+    print(f"Plot: {plot}\n")
+
+    # Determine date - either provided or extract from RINEX file
+    if date is not None:
+        # Date format: [YY, MM, DD] like MATLAB
+        if len(date) != 3:
+            raise ValueError("Date must be [YY, MM, DD]")
+        yy, month, day = date
+        print(f"Using provided date: {yy},{month},{day}")
+    else:
+        # Extract date from RINEX file
+        print("Extracting date from RINEX file...")
+        date_parts = extract_date_from_rinex(file_path)
+        if date_parts is None:
+            raise ValueError(
+                "Could not extract date from RINEX file. Please provide date."
+            )
+        yy, month, day = date_parts
+        print(f"Extracted date from RINEX: {yy},{month},{day}")
+
+    # Convert 2-digit year to 4-digit year
+    year = yy_to_year(yy)
+
+    # Generate time series for 24 hours
+    print("Generating time series...")
+    mytime = gpsweekcal([year, month, day], interval)
+    rwt = mytime.shape[0]
+    print(f"Generated {rwt} time epochs")
+
+    # Load RINEX navigation file
+    print("Loading RINEX navigation file...")
+    nav_data = readrinex(file_path)
+    if nav_data is None:
+        print("Failed to load RINEX file")
+        return None, None
+
+    print(f"Loaded navigation data: {nav_data}")
+
+    # Get available satellites
+    available_sats = nav_data.sv.values
+    print(f"Available satellites: {len(available_sats)} - {available_sats}")
+
+    # Process GPS satellites dynamically with 32 threshold
+    # Maximum GPS PRNs (threshold)
+    print(f"Processing up to {max_prn} satellites (1-{max_prn}) with dynamic discovery")
+
+    print("Computing satellite positions...")
+    svpos, successful_calculations = compute_svpos(nav_data, mytime, max_prn=max_prn)
+    print(f"Successful calculations: {successful_calculations}")
+    print(f"Computed {svpos.shape[0]} satellite positions")
+
+    # Get input filename without extension
+    name = os.path.splitext(os.path.basename(file_path))[0]
+    csv_filename, lla_filename = save_svpos_csv(svpos, name, year, month, day)
+
     print("\nRINEX Processing Complete!")
     print(f"Data saved to: {csv_filename}")
+    print(f"LLA data saved to: {lla_filename}")
     print(f"Total epochs processed: {rwt}")
     print(f"Total satellite positions calculated: {svpos.shape[0]}")
     print(f"Number of satellites processed: {max_prn}")
 
     # Generate plot if requested
-    if args.plot:
+    if plot:
         print("\nGenerating 3D plot...")
-        plot_satellites(csv_filename, args.max_epochs)
+        plot_satellites(csv_filename, max_epochs)
 
-
-if __name__ == "__main__":
-    main()
+    return svpos, csv_filename

@@ -68,7 +68,7 @@ octave rinexnav_enhanced.m
 **Run Python processing:**
 ```bash
 docker-compose run --rm rinexpos \
-  python3 python/rinexnav.py \
+  python3 python/main.py \
   --file=data/chur1610.19n --interval=15 --plot
 ```
 
@@ -81,7 +81,7 @@ docker-compose run --rm rinexpos \
 **Run with explicit date:**
 ```bash
 docker-compose run --rm rinexpos \
-  python3 python/rinexnav.py \
+  python3 python/main.py \
   --file=data/brdc0680.20n --date=20,3,8 --interval=100 --plot
 ```
 

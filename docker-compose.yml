@@ -15,7 +15,7 @@ services:
         echo 'RINEX Processing Environment Ready!'
         echo ''
         echo 'Python processing:'
-        echo '  docker-compose exec rinexpos python3 python/rinexnav.py --file=data/chur1610.19n'
+        echo '  docker-compose exec rinexpos python3 python/main.py --file=data/chur1610.19n'
         echo ''
         echo 'MATLAB/Octave processing:'
         echo '  docker-compose exec rinexpos bash -c "cd matlab && octave rinexnav_enhanced.m"'
