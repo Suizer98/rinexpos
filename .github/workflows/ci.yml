@@ -77,12 +77,14 @@ jobs:
     # - name: Test static plotting
     #   run: |
     #     # Test static plot generation
-    #     docker compose run --rm rinexpos python3 python/main.py --csv=results/chur1610_python.csv --max_epochs=100
+    #     docker compose run --rm rinexpos python3 python/main.py --csv=doc/chur1610_python.csv --max_epochs=100
         
-    - name: Verify output files
+    - name: Verify sample result screenshots
       run: |
-        ls -la results/
-        test -f results/chur1610_python.png
+        ls -la doc/
+        test -f doc/chur1610_python.png
+        test -f doc/chur1610_matlab.png
+        test -f doc/chur1610_python_animation.gif
         
     # - name: Upload test results
     #   uses: actions/upload-artifact@v4

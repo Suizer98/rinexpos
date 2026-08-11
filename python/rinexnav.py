@@ -7,6 +7,7 @@ RINEX navigation processing based on MATLAB rinexnav_enhanced.m
 """
 
 import os
+import time
 
 import numpy as np
 from ecef_to_lla import ecef_to_lla
@@ -69,6 +70,18 @@ def yy_to_year(yy):
     return yy + 1900
 
 
+def format_elapsed(seconds):
+    """Format elapsed seconds as e.g. 45s, 10m, or 10m 5s."""
+    seconds = int(seconds)
+    if seconds < 60:
+        return f"{seconds}s"
+    minutes = seconds // 60
+    secs = seconds % 60
+    if secs == 0:
+        return f"{minutes}m"
+    return f"{minutes}m {secs}s"
+
+
 def compute_svpos(nav_data, mytime, max_prn=32):
     """
     Compute satellite ECEF positions for all epochs and PRNs 1..max_prn.
@@ -96,6 +109,7 @@ def compute_svpos(nav_data, mytime, max_prn=32):
     svposh = np.zeros((max_prn, 5))
     svposc = []
     successful_calculations = 0
+    start_time = time.perf_counter()
 
     for i in range(rwt):
         timesat = mytime[i, 1]  # GPS seconds of week
@@ -128,9 +142,11 @@ def compute_svpos(nav_data, mytime, max_prn=32):
 
         svposc.append(svposh.copy())
 
-        # Progress indicator
-        if (i + 1) % 1000 == 0:
-            print(f"Processed {i + 1}/{rwt} epochs...")
+        # Progress every 1000 epochs, and always at the last epoch
+        done = i + 1
+        if done % 1000 == 0 or done == rwt:
+            elapsed = format_elapsed(time.perf_counter() - start_time)
+            print(f"Processed {done}/{rwt} epochs [{elapsed}]", flush=True)
 
     # Convert to single array
     return np.vstack(svposc), successful_calculations
@@ -150,8 +166,8 @@ def save_svpos_csv(svpos, name, year, month, day, results_dir="results"):
     # Create results directory if it doesn't exist
     os.makedirs(results_dir, exist_ok=True)
 
-    # Save CSV data (ECEF)
-    csv_filename = f"{results_dir}/{name}.csv"
+    # Save CSV data (ECEF: time, sv, X, Y, Z)
+    csv_filename = f"{results_dir}/{name}_ecef.csv"
     np.savetxt(csv_filename, svpos, delimiter=",", fmt="%.10f")
     print(f"✓ Saved: {csv_filename}")
 

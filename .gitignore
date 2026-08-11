@@ -153,6 +153,8 @@ results/*.csv
 results/*.png
 results/*.jpg
 results/*.jpeg
+results/*.gif
+doc/*.csv
 *.log
 
 # Temporary files
